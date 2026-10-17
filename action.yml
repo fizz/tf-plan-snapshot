@@ -1,0 +1,47 @@
+name: Terraform plan volume snapshot
+description: 'Snapshot the EBS volumes that a saved Terraform plan deletes, before the apply runs.'
+
+branding:
+  icon: camera
+  color: purple
+
+inputs:
+  plan:
+    description: 'Path to the saved plan file (terraform plan -out=...)'
+    required: true
+  working-directory:
+    description: 'Directory to run terraform show in'
+    required: false
+    default: '.'
+  region:
+    description: 'AWS region of the volumes'
+    required: true
+  apply:
+    description: 'Take the snapshots. Anything other than true only lists the volumes at risk.'
+    required: false
+    default: 'true'
+
+outputs:
+  snapshot_ids:
+    description: 'Space-separated IDs of the snapshots taken. Empty when no volume was at risk.'
+    value: ${{ steps.snapshot.outputs.snapshot_ids }}
+
+runs:
+  using: composite
+  steps:
+    - id: snapshot
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        PLAN: ${{ inputs.plan }}
+        REGION: ${{ inputs.region }}
+        APPLY: ${{ inputs.apply }}
+      run: |
+        SCRIPT="$GITHUB_ACTION_PATH/tf-plan-snapshot.sh"
+        chmod +x "$SCRIPT"
+        PLAN_JSON="$(mktemp)"
+        terraform show -json "$PLAN" > "$PLAN_JSON"
+
+        set -- --plan-json "$PLAN_JSON" --region "$REGION"
+        [ "$APPLY" = "true" ] && set -- "$@" --apply
+        "$SCRIPT" "$@"

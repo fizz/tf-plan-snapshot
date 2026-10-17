@@ -1,0 +1,4 @@
+{"format_version":"1.2","resource_changes":[
+ {"address":"module.hs.aws_ebs_volume.cache","type":"aws_ebs_volume","change":{"actions":["delete","create"],"before":{"id":"vol-0123456789abcdef0"}}},
+ {"address":"aws_s3_bucket.x","type":"aws_s3_bucket","change":{"actions":["update"],"before":{"id":"b"}}},
+ {"address":"aws_ebs_volume.new","type":"aws_ebs_volume","change":{"actions":["create"],"before":null}}]}
