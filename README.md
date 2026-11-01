@@ -17,7 +17,7 @@ The action fails closed. If it cannot read the plan, or a snapshot fails, the st
 - run: terraform plan -out=tfplan
   working-directory: environments/prod
 
-- uses: fizz/tf-plan-snapshot@v1
+- uses: fizz/tf-plan-snapshot@04283d48aef9b04f7a2b23fb803f410eb0202665 # v1.0.0
   with:
     plan: tfplan
     working-directory: environments/prod
